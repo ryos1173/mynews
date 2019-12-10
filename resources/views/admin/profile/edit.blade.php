@@ -47,6 +47,19 @@
                         </div>
                     </div>
                 </form>
+                
+                <div class="row mt-5">
+                    <div class="col-md-4 mx-auto">
+                        <h2>編集画面</h2>
+                        <ul class="list-group">
+                            @if ($profile_form->profilehistories !=NULL)
+                                @foreach ($profile_form->profilehistories as $profilehistory)
+                                    <li class="list-group-item">{{ $profilehistory->edited_at }}</li>
+                                @endforeach
+                            @endif
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

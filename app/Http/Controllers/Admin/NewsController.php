@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 //以下を追加でNews Modelが扱える
 use App\News;
 
+use App\History;
+
+use Carbon\Carbon;
 
 class NewsController extends Controller
 {
@@ -23,6 +26,7 @@ class NewsController extends Controller
         
         $news = new News;
         $form = $request->all();
+
         //フォームから画像が送信されたら、保存、$news->image_pathに画像のパスを保存
         if (isset($form['image'])) {
             $path = $request->file('image')->store('public/image');
@@ -30,15 +34,17 @@ class NewsController extends Controller
         } else {
             $news->image_path = null;
         }
+
         //フォームから送信された_tokenを削除
         unset($form['_token']);
         //フォームから送信されたimageを削除
         unset($form['image']);
         
         //データベースに保存
+
         $news->fill($form);
         $news->save();
-        
+
         return redirect('admin/news/create');
     }
     
@@ -68,21 +74,21 @@ class NewsController extends Controller
     
     public function update(Request $request)
     {
-        //Validationをかける
         $this->validate($request, News::$rules);
-        //News Modelからデータを取得
         $news = News::find($request->id);
-        //送信されてきたフォームデータを格納
         $news_form = $request->all();
-        if (isset($news_form['image'])) {
+        if ($request->remove == 'true') {
+            $news_form['image_path'] = null;
+        } elseif ($request->file('image')) {
             $path = $request->file('image')->store('public/image');
-            $news->image_path = basename($path);
-            unset($news_form['image']);
-        } elseif (isset($request->remove)) {
-            $news->image_path = null;
-            unset($news_form['remove']);
+            $news_form['image_path'] = basename($path);
+        } else {
+            $news_form['image_path'] = $news->image_path;
         }
+        
         unset($news_form['_token']);
+        unset($news_form['image']);
+        unset($news_form['remove']);
         
         //該当データを上書き保存
         $news->fill($news_form)->save();
@@ -91,6 +97,11 @@ class NewsController extends Controller
         $news->save();
         を短縮して書いたもの*/
         
+        $history = new History;
+        $history->news_id = $news->id;
+        $history->edited_at = Carbon::now();
+        $history->save();
+
         
         return redirect('admin/news');
     }

@@ -98,6 +98,7 @@ class NewsController extends Controller
         を短縮して書いたもの*/
         
         $history = new History;
+        //newsテーブルのidとhistoryテーブルのidを関連付け
         $history->news_id = $news->id;
         $history->edited_at = Carbon::now();
         $history->save();

@@ -37,9 +37,9 @@ class ProfileController extends Controller
     {
         $cond_title = $request->cond_title;
         if ($cond_title != '') {
-            $posts = News::where('title', $cond_title)->get();
+            $posts = Profile::where('title', $cond_title)->get();
         } else {
-            $posts = News::all();
+            $posts = Profile::all();
         }
         return view('admin.profile.index', ['posts' => $posts, 'cond_title' => $cond_title]);
     }
